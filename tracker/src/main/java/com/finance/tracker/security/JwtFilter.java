@@ -30,7 +30,12 @@ public class JwtFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
         String email = null;
         String jwt = null;
-
+        
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return; // CRITICAL: You must return here so the filter stops processing!
+        }
+        
         // 2. Check if the header contains our VIP "Bearer" wristband
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7); // Cut off the word "Bearer " to get just the token
@@ -57,5 +62,13 @@ public class JwtFilter extends OncePerRequestFilter {
         
         // Pass the request along to the next step
         filterChain.doFilter(request, response);
+    }
+    
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Tell the JWT Filter to completely ignore these paths
+        return path.startsWith("/api/users/register") || 
+               path.startsWith("/api/users/login");
     }
 }
