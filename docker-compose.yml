@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: finance_tracker
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "5432:5432"
+
+  python-ai:
+    build: ./ai-service
+    env_file: .env
+    ports:
+      - "8000:8000"
+
+  java-backend:
+    build: ./backend
+    depends_on:
+      - db
+      - python-ai
+    env_file: .env
+    ports:
+      - "8080:8080"
