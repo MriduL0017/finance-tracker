@@ -20,16 +20,19 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import com.finance.tracker.security.CustomUserDetailsService;
-import com.finance.tracker.security.JwtFilter; // IMPORT YOUR NEW FILTER!
+import com.finance.tracker.security.JwtFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // IMPORT THIS!
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter; // ADD THIS!
+    private final JwtFilter jwtFilter; 
 
-    // Inject the filter into the config
+    @Value("${FRONTEND_URL}")
+    private String frontendUrl;
+
     public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
@@ -53,7 +56,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173")); 
+        
+        configuration.setAllowedOrigins(List.of(frontendUrl)); 
+        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); 
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
