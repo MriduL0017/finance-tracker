@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Tracker</title>
+<style>
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	background-color: #f4f7f6;
+	padding: 20px;
+	color: #333;
+}
+
+.container {
+	max-width: 800px;
+	margin: auto;
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+	color: #2c3e50;
+}
+
+.form-group {
+	display: flex;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+input {
+	flex: 1;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+button {
+	padding: 10px 20px;
+	background-color: #27ae60;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+button:hover {
+	background-color: #219150;
+}
+
+.delete-btn {
+	background-color: #e74c3c;
+	padding: 5px 10px;
+}
+
+.delete-btn:hover {
+	background-color: #c0392b;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 10px;
+}
+
+th, td {
+	padding: 12px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+th {
+	background-color: #f8f9fa;
+}
+</style>
+</head>
+<body>
+
+	<div class="container">
+		<h1>💸 Finance Tracker</h1>
+
+		<div class="form-group">
+			<input type="text" id="descInput"
+				placeholder="Description (e.g., Rent)"> <input type="number"
+				id="amountInput" placeholder="Amount (e.g., 9850)"> <input
+				type="text" id="categoryInput"
+				placeholder="Category (e.g., Housing)">
+			<button onclick="addExpense()">Add Expense</button>
+		</div>
+
+		<h2>Your Expenses</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Description</th>
+					<th>Category</th>
+					<th>Amount</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody id="expenseTableBody">
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+    // The relative URL works because this HTML page is hosted on the same server (localhost:8080)
+    const API_URL = '/api/expenses';
+
+    // 1. READ: Fetch expenses from Spring Boot and update the table
+    async function loadExpenses() {
+        const response = await fetch(API_URL);
+        const expenses = await response.json();
+        
+        const tableBody = document.getElementById('expenseTableBody');
+        tableBody.innerHTML = ''; // Clear the table before reloading
+
+        expenses.forEach(expense => {
+            const row = `<tr>
+                <td>${expense.id}</td>
+                <td>${expense.description}</td>
+                <td>${expense.category}</td>
+                <td>₹${expense.amount}</td>
+                <td><button class="delete-btn" onclick="deleteExpense(${expense.id})">Delete</button></td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    // 2. CREATE: Read the form, send a POST request, and handle errors!
+    async function addExpense() {
+        const desc = document.getElementById('descInput').value;
+        const amount = document.getElementById('amountInput').value;
+        const category = document.getElementById('categoryInput').value;
+
+        if(!desc || !amount || !category) {
+            //alert("Please fill in all fields!");
+            //return;
+        }
+
+        const newExpense = {
+            description: desc,
+            amount: parseFloat(amount),
+            category: category
+        };
+
+        // Capture the server's reply in a 'response' variable
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newExpense)
+        });
+
+        // --- NEW ERROR HANDLING LOGIC ---
+        // response.ok is true for 200 statuses, but false for our 400 Bad Request
+        if (!response.ok) {
+            // Read the clean JSON dictionary our GlobalExceptionHandler sent back
+            const errorDictionary = await response.json();
+            
+            // Build a readable alert message
+            let errorMessage = "Oops! We found some issues:\n\n";
+            for (let field in errorDictionary) {
+                errorMessage += `❌ ${errorDictionary[field]}\n`;
+            }
+            
+            // Show the user the exact rules they broke, then stop running the function
+            alert(errorMessage);
+            return; 
+        }
+        // ---------------------------------
+
+        // If we get past the IF statement, it was a success! 
+        // Clear the inputs and reload the table
+        document.getElementById('descInput').value = '';
+        document.getElementById('amountInput').value = '';
+        document.getElementById('categoryInput').value = '';
+        loadExpenses();
+    }
+
+    // 3. DELETE: Send a DELETE request to the specific ID URL
+    async function deleteExpense(id) {
+        if(confirm("Are you sure you want to delete this expense?")) {
+            await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE'
+            });
+            loadExpenses();
+        }
+    }
+
+    // Load expenses immediately when the page opens
+    window.onload = loadExpenses;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+# --- ROOT & GENERAL ---
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.log
+.DS_Store
+
+# --- FRONTEND (React/Vite) ---
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/npm-debug.log*
+
+# --- BACKEND (Java/Spring Boot) ---
+**/target/
+**/.mvn/
+**/mvnw
+**/mvnw.cmd
+**/.metadata/
+**/bin/
+**/*.class
+**/*.iml
+
+# --- AI SERVICE (Python/FastAPI) ---
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/
+**/venv/
+**/env/

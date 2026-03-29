@@ -1,0 +1,337 @@
+/* IMPORT MINIMAL FONT */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+
+/* FIX BUTTON SPILL */
+.form-actions {
+  flex: 1 1 100%; /* The '100%' forces this container to take up an entire new line */
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.form-actions button {
+  flex: 1; /* Makes 'Update' and 'Cancel' (or just 'Add Expense') span beautifully across the bottom */
+  margin-top: 0;
+}
+
+/* TOGGLE BUTTON STYLE */
+.toggle-btn {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px dashed var(--border-color);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.85rem;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  background: var(--border-color);
+}
+
+
+/* --- CSS VARIABLES FOR CONSISTENCY --- */
+:root {
+  --bg-color: #f7f7f8;
+  --card-bg: #ffffff;
+  --text-main: #27272a;
+  --text-muted: #71717a;
+  --accent: #18181b; /* Sharp, dark charcoal */
+  --accent-hover: #3f3f46;
+  --border-color: #e4e4e7;
+  --radius-lg: 16px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dashboard-container {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.dashboard-header {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* --- FORM STYLING --- */
+.expense-form-card {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  margin-bottom: 40px;
+}
+
+.expense-form {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to drop to the next line if they run out of space */
+  gap: 16px;
+  align-items: center;
+}
+
+/* Make the inputs share the top row equally */
+.expense-form > input, 
+.expense-form > select {
+  flex: 1 1 150px; /* Grow, shrink, but don't get smaller than 150px */
+}
+
+.input-field {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background-color: #fafafa;
+}
+
+.input-field:focus {
+  border-color: var(--accent);
+  background-color: #fff;
+}
+
+.desc-input { flex: 2; }
+.amount-input { flex: 1; }
+
+.submit-btn {
+  background-color: var(--accent);
+  color: var(--btn-text, white); /* Uses dynamic text color, defaults to white */
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+/* --- LIST STYLING --- */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-main);
+}
+
+.expense-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.expense-item {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.expense-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.expense-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.expense-desc {
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.expense-category {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: #f4f4f5;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  width: max-content;
+}
+
+.expense-amount {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+/* --- LOGIN SCREEN STYLING --- */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-card {
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.error-text {
+  color: #ef4444; /* A soft, modern red */
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.logout-btn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.logout-btn:hover {
+  background: var(--border-color);
+  color: var(--text-main);
+}
+
+/* --- EXECUTIVE METRIC CARDS --- */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.metric-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.metric-value {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* --- 1. DARK MODE VARIABLES --- */
+/* When the body has this class, it overrides the default colors */
+body.dark-mode {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --border-color: #374151;
+  
+  /* NEW: Button colors for dark mode */
+  --accent: #f3f4f6;       /* Makes the button white */
+  --accent-hover: #d1d5db; /* Slightly darker white on hover */
+  --btn-text: #121212;     /* Makes the text dark so you can read it! */
+  
+  color: var(--text-main);
+  background-color: var(--bg-color);
+}
+
+/* --- 2. THE LOADING SPINNER --- */
+.spinner {
+  border: 4px solid var(--border-color);
+  border-top: 4px solid #3b82f6; /* Blue accent */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 40px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- 3. MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+  .header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr; /* Stack the metric cards vertically */
+  }
+
+  .expense-form > input, 
+  .expense-form > select {
+    flex: 1 1 100%; /* Force inputs to take up the full width on small screens */
+  }
+  
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
