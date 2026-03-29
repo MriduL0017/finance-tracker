@@ -47,7 +47,7 @@ public class SecurityConfig {
                 // THE FIX: Explicitly allow all preflight OPTIONS requests to pass through!
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() 
                 // Your existing public routes
-                .requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                .requestMatchers("/api/users/register", "/api/users/login", "/error").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
