@@ -7,20 +7,16 @@ import json
 import os
 from dotenv import load_dotenv
 
+app = FastAPI()
+
 @app.get("/")
 async def health_check():
     return {"status": "AI Brain is awake and healthy!"}
 
-# 1. Wake up the AI Brain!
-# Load the hidden variables from the .env file
 load_dotenv()
-
-# Grab the key securely
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-2.5-flash')
-
-app = FastAPI()
 
 class ExpenseRequest(BaseModel):
     description: str
