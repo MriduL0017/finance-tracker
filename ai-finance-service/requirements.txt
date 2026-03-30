@@ -1,7 +1,6 @@
 fastapi
 uvicorn
 google-generativeai
-pytesseract
 pillow
 python-dotenv
 python-multipart
