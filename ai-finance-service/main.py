@@ -7,6 +7,10 @@ import json
 import os
 from dotenv import load_dotenv
 
+@app.get("/")
+async def health_check():
+    return {"status": "AI Brain is awake and healthy!"}
+
 # 1. Wake up the AI Brain!
 # Load the hidden variables from the .env file
 load_dotenv()
