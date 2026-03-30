@@ -1,18 +1,11 @@
 from fastapi import FastAPI, UploadFile, File
 from pydantic import BaseModel
 import google.generativeai as genai
-import pytesseract
 from PIL import Image
 import io
 import json
-
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
-
-# --- WINDOWS USERS ONLY ---
-# Point this to where you installed Tesseract. Mac/Linux users can delete this line.
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # 1. Wake up the AI Brain!
 # Load the hidden variables from the .env file
@@ -46,21 +39,19 @@ async def categorize_expense(expense: ExpenseRequest):
     except Exception as e:
         return {"category": "Other"}
 
-# --- ENDPOINT 2: The New Eyes (OCR + AI) ---
+# --- ENDPOINT 2: The New Eyes (Native Vision API) ---
 @app.post("/read-receipt")
 async def read_receipt(file: UploadFile = File(...)):
     try:
+        # 1. Read the raw image bytes uploaded from React
         image_bytes = await file.read()
         img = Image.open(io.BytesIO(image_bytes))
-        raw_text = pytesseract.image_to_string(img)
-        clean_text = " ".join(raw_text.split())
-        print(f"Tesseract saw this text: {clean_text}")
         
-        # --- THE UPGRADED PROMPT ---
-        # --- THE UPGRADED PROMPT ---
-        prompt = f"""
-        Analyze this raw text extracted from a receipt: "{clean_text}"
-        Extract the following four pieces of information and return them STRICTLY as a JSON object. Do not include markdown formatting, just the raw JSON.
+        # --- THE UPGRADED MULTIMODAL PROMPT ---
+        prompt = """
+        Analyze this image of a receipt. 
+        Extract the following four pieces of information and return them STRICTLY as a JSON object. 
+        Do not include markdown formatting, backticks, or conversational text. Just the raw JSON.
 
         1. "description": The name of the restaurant, store, or a very brief summary (max 4 words).
         2. "amount": The final total bill amount as a clean numeric float (e.g., 907.00). Ignore currency symbols.
@@ -68,36 +59,41 @@ async def read_receipt(file: UploadFile = File(...)):
         4. "date": The date of the receipt formatted exactly as "YYYY-MM-DD". If the year is missing, assume 2026. If no date is found, return null.
 
         Format exactly like this:
-        {{
+        {
             "description": "Store Name",
             "amount": 0.00,
             "category": "Other",
             "date": "2026-06-16"
-        }}
+        }
         """
         
-        response = model.generate_content(prompt)
-        clean_json_string = response.text.strip().strip("```json").strip("```").strip()
+        # 2. THE MAGIC: Send BOTH the prompt and the image to Gemini directly
+        response = model.generate_content([prompt, img])
+        
+        # 3. Clean up the response to ensure it's pure JSON
+        clean_json_string = response.text.replace("```json", "").replace("```", "").strip()
         smart_data = json.loads(clean_json_string)
         
+        # 4. Enforce strict categories
         valid_categories = ["Food", "Housing", "Transport", "Subscriptions", "Utilities", "Other"]
         if smart_data.get("category") not in valid_categories:
             smart_data["category"] = "Other"
             
         print(f"AI extracted: {smart_data}")
         
-        # Return the structured data WITH the date to Java!
+        # Return the structured data to Java! 
+        # (Keeping 'extracted_text' as a placeholder just in case your Java code expects that key)
         return {
-            "extracted_text": clean_text,
+            "extracted_text": "Extracted via Gemini Vision", 
             "description": smart_data.get("description", "Unknown Vendor"),
             "amount": smart_data.get("amount", 0.0),
             "category": smart_data.get("category", "Other"),
-            "date": smart_data.get("date") # NEW: Sending the date!
+            "date": smart_data.get("date") 
         }
         
     except json.JSONDecodeError:
         print("AI failed to return valid JSON.")
         return {"error": "Failed to parse receipt", "category": "Other"}
     except Exception as e:
-        print(f"OCR Error: {e}")
+        print(f"Vision Error: {e}")
         return {"error": str(e), "category": "Other"}
