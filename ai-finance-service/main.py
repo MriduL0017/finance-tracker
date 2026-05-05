@@ -94,8 +94,7 @@ async def read_receipt(file: UploadFile = File(...)):
         )
         
         # Clean up the response to ensure it's pure JSON
-        clean_json_string = response.text.replace("```json", "").replace("
-```", "").strip()
+        clean_json_string = response.text.replace("```json", "").replace("```", "").strip()
         smart_data = json.loads(clean_json_string)
         
         print(f"AI extracted: {smart_data}")
