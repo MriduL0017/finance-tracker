@@ -6,6 +6,7 @@ import json
 import os
 from dotenv import load_dotenv
 
+<<<<<<< HEAD
 # 1. Import the NEW standard SDK
 from google import genai
 
@@ -13,17 +14,27 @@ from google import genai
 app = FastAPI()
 
 # Add the Health Check
+=======
+app = FastAPI()
+
+>>>>>>> c6b9ea0a1ea1b7347d69a8ed46230a36b4d4651e
 @app.get("/")
 async def health_check():
     return {"status": "AI Brain is awake and healthy!"}
 
+<<<<<<< HEAD
 # 2. Wake up the AI Brain!
+=======
+>>>>>>> c6b9ea0a1ea1b7347d69a8ed46230a36b4d4651e
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
+<<<<<<< HEAD
 # 3. Initialize the NEW Client
 client = genai.Client(api_key=api_key)
 
+=======
+>>>>>>> c6b9ea0a1ea1b7347d69a8ed46230a36b4d4651e
 class ExpenseRequest(BaseModel):
     description: str
 
