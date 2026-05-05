@@ -6,7 +6,6 @@ import json
 import os
 from dotenv import load_dotenv
 
-<<<<<<< HEAD
 # 1. Import the NEW standard SDK
 from google import genai
 
@@ -14,27 +13,19 @@ from google import genai
 app = FastAPI()
 
 # Add the Health Check
-=======
-app = FastAPI()
-
->>>>>>> c6b9ea0a1ea1b7347d69a8ed46230a36b4d4651e
 @app.get("/")
 async def health_check():
     return {"status": "AI Brain is awake and healthy!"}
 
-<<<<<<< HEAD
-# 2. Wake up the AI Brain!
-=======
->>>>>>> c6b9ea0a1ea1b7347d69a8ed46230a36b4d4651e
-load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
+# 2. Lazy-Load the AI Client (Prevents Silent Crashes on Boot)
+def get_ai_client():
+    load_dotenv()
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        print("⚠️ WARNING: GEMINI_API_KEY is missing!")
+        api_key = "MISSING_KEY" # Prevents boot crash; will fail safely during the API call if missing
+    return genai.Client(api_key=api_key)
 
-<<<<<<< HEAD
-# 3. Initialize the NEW Client
-client = genai.Client(api_key=api_key)
-
-=======
->>>>>>> c6b9ea0a1ea1b7347d69a8ed46230a36b4d4651e
 class ExpenseRequest(BaseModel):
     description: str
 
@@ -50,7 +41,8 @@ async def categorize_expense(expense: ExpenseRequest):
     Reply with ONLY the category string. No punctuation, no markdown, no explanation.
     """
     try:
-        # NEW SDK Syntax
+        # Wake up the client ONLY when requested
+        client = get_ai_client()
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=prompt
@@ -58,6 +50,7 @@ async def categorize_expense(expense: ExpenseRequest):
         smart_category = response.text.strip().strip("'*.,[]`").title()
         return {"category": smart_category}
     except Exception as e:
+        print(f"Categorization Error: {e}")
         return {"category": "Other"}
 
 # --- ENDPOINT 2: The New Eyes (Native Vision API) ---
@@ -93,7 +86,8 @@ async def read_receipt(file: UploadFile = File(...)):
         }
         """
         
-        # NEW SDK Syntax for passing text + images
+        # Wake up the client ONLY when requested
+        client = get_ai_client()
         response = client.models.generate_content(
             model='gemini-2.5-flash',
             contents=[prompt, img]
